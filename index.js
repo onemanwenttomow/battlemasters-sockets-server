@@ -14,7 +14,11 @@ io.on("connection", (socket) => {
     console.log('socket connection!!!!: ',socket.id);
     socket.emit("news", { hello: "world" });
 
-    socket.on("check if room exists", ({roomId}) => {
+    socket.on("check if room exists", ({roomId, player}) => {
+        console.log("player in check if room exists", player)
+        if (player === 'player1') {
+            return;
+        }
         console.log("check if room exists: ", roomId);
         console.log(rooms[roomId]);
         if(rooms[roomId]) {
@@ -22,7 +26,9 @@ io.on("connection", (socket) => {
                 socketIds: [socket.id]
             };
         }
-        socket.emit("room", rooms);
+        io.to(socket.id).emit("room", rooms);
+        io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
+        // socket.emit("room", rooms);
     });
 
     socket.on("new room", ({roomId}) => {
@@ -35,7 +41,9 @@ io.on("connection", (socket) => {
             };
         }
         console.log("rooms: ", rooms);
-        socket.emit("room", rooms);
+        io.to(socket.id).emit("room", rooms);
+
+        // socket.emit("room", rooms);
     });
     socket.on("disconnect", () => {
         console.log("disconnect!!!!", socket.id);
