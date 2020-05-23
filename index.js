@@ -14,6 +14,23 @@ io.on("connection", (socket) => {
     console.log('socket connection!!!!: ',socket.id);
     socket.emit("news", { hello: "world" });
 
+    socket.on('chosen army', ({imperialArmy, chaosArmy, player, roomId}) => {
+        console.log(imperialArmy, chaosArmy,  player);
+        console.log("chaosArmy: ", chaosArmy);
+        console.log("imperialArmy: ", imperialArmy)
+        if (player === 'player1') {
+            io.to(rooms[roomId].player2.socketIds[0]).emit("army chosen", {
+                imperialArmy,
+                chaosArmy
+            });
+        } else {
+            io.to(rooms[roomId].player1.socketIds[0]).emit("army chosen", {
+                imperialArmy,
+                chaosArmy
+            });
+        }
+    });
+
     socket.on("check if room exists", ({roomId, player}) => {
         console.log("player in check if room exists", player)
         if (player === 'player1') {
