@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
             };
         }
         io.to(socket.id).emit("room", rooms);
-        if (player) {
+        if (player && rooms[roomId].player1) {
             io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
         }
         // socket.emit("room", rooms);
