@@ -1,6 +1,6 @@
 const app = require("express")();
 const server = require("http").Server(app);
-const io = require("socket.io")(server,  { origins: 'localhost:3000 https://jolly-khorana-77c4aa.netlify.app:*' });
+const io = require("socket.io")(server,  {origins: '*:*'});
 
 server.listen(process.env.PORT || 8080, () => console.log("battlemasters socket server up and running!"));
 
@@ -37,6 +37,7 @@ io.on("connection", (socket) => {
             return;
         }
         console.log("check if room exists: ", roomId);
+        console.log("rooms: ", rooms);
         console.log(rooms[roomId]);
         if(rooms[roomId]) {
             rooms[roomId].player2 = {
@@ -44,7 +45,9 @@ io.on("connection", (socket) => {
             };
         }
         io.to(socket.id).emit("room", rooms);
-        io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
+        if (player) {
+            io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
+        }
         // socket.emit("room", rooms);
     });
 
