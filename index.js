@@ -38,9 +38,9 @@ io.on("connection", (socket) => {
         }
         io.to(socket.id).emit("room", rooms);
 
-        if (!rooms[roomId]) {
-            return;
-        }
+        // if (!rooms[roomId]) {
+        //     return;
+        // }
         console.log("check if room exists: ", roomId);
         console.log("rooms: ", rooms);
         console.log(rooms[roomId]);
