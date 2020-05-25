@@ -36,18 +36,20 @@ io.on("connection", (socket) => {
         if (player === 'player1') {
             return;
         }
+        io.to(socket.id).emit("room", rooms);
+
+        if (!rooms[roomId]) {
+            return;
+        }
         console.log("check if room exists: ", roomId);
         console.log("rooms: ", rooms);
         console.log(rooms[roomId]);
-        if(rooms[roomId]) {
-            rooms[roomId].player2 = {
-                socketIds: [socket.id]
-            };
-        }
-        io.to(socket.id).emit("room", rooms);
-        if (rooms[roomId]) {
-            io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
-        }
+        rooms[roomId].player2 = {
+            socketIds: [socket.id]
+        };
+
+        io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
+
         // socket.emit("room", rooms);
     });
 
