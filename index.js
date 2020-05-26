@@ -14,6 +14,15 @@ io.on("connection", (socket) => {
     console.log('socket connection!!!!: ',socket.id);
     socket.emit("news", { hello: "world" });
 
+    socket.on('start game', ({roomId}) => {
+        for (let room in rooms) {
+            if (room === roomId) {
+                io.to(rooms[roomId].player2.socketIds[0]).emit("startgame");
+                io.to(rooms[roomId].player1.socketIds[0]).emit("startgame");
+            }
+        }
+    });
+
     socket.on('chosen army', ({imperialArmy, chaosArmy, player, roomId}) => {
         console.log(imperialArmy, chaosArmy,  player);
         console.log("chaosArmy: ", chaosArmy);
@@ -39,7 +48,7 @@ io.on("connection", (socket) => {
         console.log("check if room exists: ", roomId);
         console.log("rooms: ", rooms);
         console.log(rooms[roomId]);
-        if(rooms[roomId]) {
+        if (rooms[roomId]) {
             rooms[roomId].player2 = {
                 socketIds: [socket.id]
             };
