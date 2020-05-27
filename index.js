@@ -14,11 +14,17 @@ io.on("connection", (socket) => {
     console.log('socket connection!!!!: ',socket.id);
     socket.emit("news", { hello: "world" });
 
-    socket.on('start game', ({roomId}) => {
+    socket.on('start game', ({roomId, army, player}) => {
+        player === 'player1' ?
+            player = 'player2' :
+            player = 'player1';
+
+        army === 'Imperial' ?
+            army = 'Chaos' :
+            army = 'Imperial';
         for (let room in rooms) {
             if (room === roomId) {
-                io.to(rooms[roomId].player2.socketIds[0]).emit("startgame");
-                io.to(rooms[roomId].player1.socketIds[0]).emit("startgame");
+                io.to(rooms[roomId][player].socketIds[0]).emit("startgame", {army});
             }
         }
     });
