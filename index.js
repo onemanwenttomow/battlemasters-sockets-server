@@ -30,30 +30,19 @@ io.on("connection", (socket) => {
     });
 
     socket.on('chosen army', ({imperialArmy, chaosArmy, player, roomId}) => {
-        console.log(imperialArmy, chaosArmy,  player);
-        console.log("chaosArmy: ", chaosArmy);
-        console.log("imperialArmy: ", imperialArmy)
-        if (player === 'player1') {
-            io.to(rooms[roomId].player2.socketIds[0]).emit("army chosen", {
-                imperialArmy,
-                chaosArmy
-            });
-        } else {
-            io.to(rooms[roomId].player1.socketIds[0]).emit("army chosen", {
-                imperialArmy,
-                chaosArmy
-            });
-        }
+        player === 'player1' ?
+            player = 'player2':
+            player = 'player1';
+        io.to(rooms[roomId][player].socketIds[0]).emit("army chosen", {
+            imperialArmy,
+            chaosArmy
+        });
     });
 
     socket.on("check if room exists", ({roomId, player}) => {
-        console.log("player in check if room exists", player)
         if (player === 'player1') {
             return;
         }
-        console.log("check if room exists: ", roomId);
-        console.log("rooms: ", rooms);
-        console.log(rooms[roomId]);
         if (rooms[roomId]) {
             rooms[roomId].player2 = {
                 socketIds: [socket.id]
@@ -63,11 +52,9 @@ io.on("connection", (socket) => {
         if (rooms[roomId]) {
             io.to(rooms[roomId].player1.socketIds[0]).emit("player2 joined");
         }
-        // socket.emit("room", rooms);
     });
 
     socket.on("new room", ({roomId}) => {
-        console.log(roomId);
         if (!rooms.roomId) {
             rooms[roomId] = {
                 'player1': {
@@ -75,11 +62,32 @@ io.on("connection", (socket) => {
                 }
             };
         }
-        console.log("rooms: ", rooms);
         io.to(socket.id).emit("room", rooms);
-
-        // socket.emit("room", rooms);
     });
+
+    socket.on('new socket id', ({player, roomId}) => {
+        rooms[roomId][player] = {
+            socketIds: [socket.id]
+        };
+    });
+
+    socket.on('tile drag start', ({id, player, roomId}) => {
+        player === 'player1' ?
+            player = 'player2':
+            player = 'player1';
+        io.to(rooms[roomId][player].socketIds[0]).emit("other player picked up tile", {id});
+    });
+
+    socket.on('tile drag end', ({id, player, roomId, row, col}) => {
+        console.log("tile drag end: ", id, player, roomId, row, col);
+        player === 'player1' ?
+            player = 'player2':
+            player = 'player1';
+        io.to(rooms[roomId][player].socketIds[0]).emit("other player dropped tile", {id, row, col});
+    });
+
+
+
     socket.on("disconnect", () => {
         console.log("disconnect!!!!", socket.id);
     });
