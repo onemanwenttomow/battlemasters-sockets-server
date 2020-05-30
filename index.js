@@ -16,12 +16,10 @@ io.on("connection", (socket) => {
 
     socket.on('start game', ({roomId, army, player}) => {
         const otherPlayer = getOtherPlayer(player);
-        army === 'Imperial' ?
-            army = 'Chaos' :
-            army = 'Imperial';
+        const otherArmy = getOtherArmy(army);
         for (let room in rooms) {
             if (room === roomId) {
-                io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("startgame", {army});
+                io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("startgame", {army: otherArmy});
             }
         }
     });
@@ -72,15 +70,12 @@ io.on("connection", (socket) => {
     });
 
     socket.on('tile drag end', ({id, player, roomId, row, col}) => {
-        console.log("tile drag end: ", id, player, roomId, row, col);
         const otherPlayer = getOtherPlayer(player);
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("other player dropped tile", {id, row, col});
     });
 
     socket.on('allExtraPiecesAddedToBoard', ({player, roomId}) => {
-        console.log("player, roomId in allExtraPiecesAddedToBoard", player, roomId);
         const otherPlayer = getOtherPlayer(player);
-        // io.emit("allExtraPiecesAddedToBoard");
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("allExtraPiecesAddedToBoard");
     });
 
@@ -95,4 +90,11 @@ function getOtherPlayer(player) {
         player = 'player2':
         player = 'player1';
     return player;
+}
+
+function getOtherArmy(army) {
+    army === 'Imperial' ?
+        army = 'Chaos' :
+        army = 'Imperial';
+    return army;
 }
