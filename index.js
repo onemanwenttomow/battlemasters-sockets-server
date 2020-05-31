@@ -79,6 +79,18 @@ io.on("connection", (socket) => {
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("allExtraPiecesAddedToBoard");
     });
 
+    socket.on('updateUnitPosition', ({id, player, roomId, positions}) => {
+        io.to(rooms[roomId][player].socketIds[0]).emit("updateUnitPosition", {id, positions});
+    });
+
+
+
+    socket.on('finishMove', ({id, player, roomId}) => {
+        const otherPlayer = getOtherPlayer(player);
+        console.log("finishMove: ", id, player, roomId);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("finishMove", {id});
+    });
+
 
     socket.on("disconnect", () => {
         console.log("disconnect!!!!", socket.id);
