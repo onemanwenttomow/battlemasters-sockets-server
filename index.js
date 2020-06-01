@@ -98,6 +98,40 @@ io.on("connection", (socket) => {
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("card flipped", {card, i});
     });
 
+    socket.on('startAttack', ({player, roomId, unitUnderAttack}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("startAttack", {unitUnderAttack});
+    });
+
+    socket.on('canBeAttacked', ({player, roomId, unit, unitsInReach}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("canBeAttacked", {unit, unitsInReach});
+    });
+
+    socket.on('finishTurn', ({player, roomId, id}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("finishTurn", {id});
+    });
+
+    socket.on('rollDie', ({player, roomId, die, i}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("rollDie", {die, i});
+    });
+
+    socket.on('attack area die setup', ({player, roomId, defendingDie, attackingDie}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("attack area die setup", {defendingDie, attackingDie});
+    });
+
+    socket.on('battleOver', ({player, roomId, damageDealt}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("battleOver", {damageDealt});
+    });
+
+
+
+
+
 
 
     socket.on('finishMove', ({id, player, roomId}) => {
