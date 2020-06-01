@@ -83,6 +83,21 @@ io.on("connection", (socket) => {
         io.to(rooms[roomId][player].socketIds[0]).emit("updateUnitPosition", {id, positions});
     });
 
+    socket.on('playingCards', ({shuffledPlayingCardsCopy, shuffledPlayingCards, player, roomId}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("playingCardsFromServer", {shuffledPlayingCardsCopy, shuffledPlayingCards});
+    });
+
+    socket.on('currentCard', ({roomId, card}) => {
+        io.to(rooms[roomId]['player1'].socketIds[0]).emit("currentCard", {card});
+        io.to(rooms[roomId]['player2'].socketIds[0]).emit("currentCard", {card});
+    });
+
+    socket.on('card flipped', ({player, roomId, card, i}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("card flipped", {card, i});
+    });
+
 
 
     socket.on('finishMove', ({id, player, roomId}) => {
