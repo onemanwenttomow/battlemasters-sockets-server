@@ -88,6 +88,11 @@ io.on("connection", (socket) => {
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("playingCardsFromServer", {shuffledPlayingCardsCopy, shuffledPlayingCards});
     });
 
+    socket.on('ogreCards', ({shuffledPlayingCardsCopy, shuffledPlayingCards, player, roomId}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("ogreCardsFromServer", {shuffledPlayingCardsCopy, shuffledPlayingCards});
+    });
+
     socket.on('currentCard', ({roomId, card}) => {
         io.to(rooms[roomId]['player1'].socketIds[0]).emit("currentCard", {card});
         io.to(rooms[roomId]['player2'].socketIds[0]).emit("currentCard", {card});
@@ -96,6 +101,11 @@ io.on("connection", (socket) => {
     socket.on('card flipped', ({player, roomId, card, i}) => {
         const otherPlayer = getOtherPlayer(player);
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("card flipped", {card, i});
+    });
+
+    socket.on('ogre card flipped', ({player, roomId, card, i}) => {
+        const otherPlayer = getOtherPlayer(player);
+        io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("ogre card flipped", {card, i});
     });
 
     socket.on('startAttack', ({player, roomId, unitUnderAttack}) => {
@@ -128,18 +138,10 @@ io.on("connection", (socket) => {
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("battleOver", {damageDealt});
     });
 
-
-
-
-
-
-
     socket.on('finishMove', ({id, player, roomId}) => {
         const otherPlayer = getOtherPlayer(player);
-        console.log("finishMove: ", id, player, roomId);
         io.to(rooms[roomId][otherPlayer].socketIds[0]).emit("finishMove", {id});
     });
-
 
     socket.on("disconnect", () => {
         console.log("disconnect!!!!", socket.id);
